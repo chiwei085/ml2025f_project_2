@@ -36,7 +36,7 @@ def main() -> None:
     config_path = Path(args.config)
 
     train_config = load_train_config(config_path)
-    weights_path = Path(train_config.pop("weights", "YOLO12s.pt"))
+    weights_path = Path(train_config.pop("weights", "yolo12s.pt"))
 
     train_config = {k: v for k, v in train_config.items() if v is not None}
     train_config["data"] = str(data_path)
