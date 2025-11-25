@@ -7,7 +7,9 @@ from ultralytics import YOLO
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Train YOLO12s on the provided dataset.")
     parser.add_argument(
-        "--weights", default="YOLO12s.pt", help="Path to pretrained YOLO12s weights."
+        "--weights",
+        default="yolo12s.pt",
+        help="Path to pretrained weights or model name.",
     )
     parser.add_argument("--data", default="training.yaml", help="Dataset config file.")
     parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs.")
@@ -28,10 +30,15 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
-    weights_path = Path(args.weights)
+    weights_arg = args.weights
+    weight_path = Path(weights_arg)
+    if weight_path.is_file():
+        weights_source = str(weight_path)
+    else:
+        weights_source = weights_arg
     data_path = Path(args.data)
 
-    model = YOLO(str(weights_path))
+    model = YOLO(weights_source)
     model.train(
         data=str(data_path),
         epochs=args.epochs,

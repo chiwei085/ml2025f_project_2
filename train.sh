@@ -6,4 +6,4 @@ else
   RUNNER="python3"
 fi
 
-$RUNNER train.py --weights YOLO12s.pt --data training.yaml --epochs 250 --imgsz 640 --batch 16 --name project_2_res
+$RUNNER train.py --weights YOLO12s.pt --data training.yaml --epochs 250 --imgsz 640 --batch 16 --device 0 --name project_2_res
