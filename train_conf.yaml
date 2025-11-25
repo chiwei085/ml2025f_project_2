@@ -2,6 +2,7 @@ weights: yolo12s.pt
 epochs: 250
 imgsz: 640
 batch: 16
-device: null
+patience: 60
+device: 0
 project: runs/train
 name: project_2_res
