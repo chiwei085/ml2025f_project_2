@@ -1,53 +1,48 @@
 import argparse
 from pathlib import Path
+from typing import Any
 
+import yaml
 from ultralytics import YOLO
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train YOLO12s on the provided dataset.")
-    parser.add_argument(
-        "--weights",
-        default="yolo12s.pt",
-        help="Path to pretrained weights or model name.",
-    )
+    parser = argparse.ArgumentParser(description="Train YOLO with a config-driven setup.")
     parser.add_argument("--data", default="training.yaml", help="Dataset config file.")
-    parser.add_argument("--epochs", type=int, default=50, help="Number of training epochs.")
-    parser.add_argument("--imgsz", type=int, default=640, help="Input image size.")
-    parser.add_argument("--batch", type=int, default=16, help="Batch size.")
     parser.add_argument(
-        "--device",
-        default=None,
-        help="Device to run on (e.g. 0, 0,1 or cpu). Uses auto-selection when not set.",
+        "--config",
+        default="train_conf.yaml",
+        help="YAML file holding training parameters (weights, epochs, etc.).",
     )
-    parser.add_argument(
-        "--project", default="runs/train", help="Project directory for checkpoints."
-    )
-    parser.add_argument("--name", default="yolo12s", help="Name of the training run.")
     return parser.parse_args()
+
+
+def load_train_config(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        raise FileNotFoundError(f"Config file not found: {path}")
+
+    with path.open("r", encoding="utf-8") as f:
+        config = yaml.safe_load(f) or {}
+
+    if not isinstance(config, dict):
+        raise ValueError(f"Config file must contain a mapping, got {type(config).__name__}")
+
+    return config
 
 
 def main() -> None:
     args = parse_args()
-
-    weights_arg = args.weights
-    weight_path = Path(weights_arg)
-    if weight_path.is_file():
-        weights_source = str(weight_path)
-    else:
-        weights_source = weights_arg
     data_path = Path(args.data)
+    config_path = Path(args.config)
 
-    model = YOLO(weights_source)
-    model.train(
-        data=str(data_path),
-        epochs=args.epochs,
-        imgsz=args.imgsz,
-        batch=args.batch,
-        device=args.device,
-        project=args.project,
-        name=args.name,
-    )
+    train_config = load_train_config(config_path)
+    weights_path = Path(train_config.pop("weights", "YOLO12s.pt"))
+
+    train_config = {k: v for k, v in train_config.items() if v is not None}
+    train_config["data"] = str(data_path)
+
+    model = YOLO(str(weights_path))
+    model.train(**train_config)
 
 
 if __name__ == "__main__":

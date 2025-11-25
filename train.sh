@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+DATA_PATH=${DATA_PATH:-training.yaml}
+CONFIG_PATH=${CONFIG_PATH:-train_conf.yaml}
+
 if command -v uv >/dev/null 2>&1; then
   RUNNER="uv run"
 else
   RUNNER="python3"
 fi
 
-$RUNNER train.py --weights yolo12s.pt --data training.yaml --epochs 250 --imgsz 640 --batch 16 --device 0 --name project_2_res
+$RUNNER train.py --data "$DATA_PATH" --config "$CONFIG_PATH"

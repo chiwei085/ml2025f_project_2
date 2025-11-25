@@ -1,0 +1,7 @@
+weights: YOLO12s.pt
+epochs: 250
+imgsz: 640
+batch: 16
+device: null
+project: runs/train
+name: project_2_res
