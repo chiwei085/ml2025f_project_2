@@ -6,4 +6,11 @@ else
   RUNNER="python3"
 fi
 
-$RUNNER infer.py --weights runs/train/project_2_res/weights/best.pt --name project_2_res
+# CONF=${CONF:-0.1}
+# IOU=${IOU:-0.5}
+
+$RUNNER infer.py \
+  --weights runs/train/project_2_res2/weights/best.pt \
+  --name project_2_res \
+  # --conf "$CONF" \
+  # --iou "$IOU"

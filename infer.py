@@ -1,6 +1,7 @@
 import argparse
 from collections.abc import Iterable
 from pathlib import Path
+from typing import Any
 
 from tqdm import tqdm
 from ultralytics import YOLO
@@ -62,17 +63,23 @@ def infer(
     max_det: int,
 ) -> None:
     model = YOLO(str(weights))
-    results = model.predict(
-        source=str(source),
-        save=True,
-        conf=conf,
-        iou=iou,
-        max_det=max_det,
-        imgsz=imgsz,
-        device=device,
-        stream=True,
-        verbose=False,
-    )
+    predict_kwargs: dict[str, Any] = {
+        "source": str(source),
+        "save": True,
+        "max_det": max_det,
+        "imgsz": imgsz,
+        "stream": True,
+        "verbose": False,
+    }
+
+    if device is not None:
+        predict_kwargs["device"] = device
+    if conf is not None:
+        predict_kwargs["conf"] = conf
+    if iou is not None:
+        predict_kwargs["iou"] = iou
+
+    results = model.predict(**predict_kwargs)
     write_results(results, output_dir=output_dir, filename=output_name)
 
 

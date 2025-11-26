@@ -1,8 +1,8 @@
-weights: yolo12s.pt
-epochs: 250
+weights: yolo12m.pt
+epochs: 50
 imgsz: 640
 batch: 16
-patience: 60
+patience: 40
 device: 0
 project: runs/train
 name: project_2_res
